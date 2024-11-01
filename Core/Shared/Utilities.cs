@@ -5,7 +5,8 @@ using Newtonsoft.Json.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace Core.Shared {
+namespace Core.Shared
+{
     public class Utilities
     {
         public static bool isAlphaNumeric(string str)
@@ -68,7 +69,8 @@ namespace Core.Shared {
             return r.IsMatch(phone);
         }
 
-        public static bool isValidName(string name) {
+        public static bool isValidName(string name)
+        {
             if (name is null)
                 return false;
             if (name.Split(' ').Length < 2)
@@ -76,7 +78,8 @@ namespace Core.Shared {
             Regex r = new Regex(@"^([a-zA-Z '\-])*$");
             return r.IsMatch(name);
         }
-        public static DateTime getRandomDate() {
+        public static DateTime getRandomDate()
+        {
             Random gen = new Random();
             DateTime start = new DateTime(1970, 1, 1);
             int range = (DateTime.Today - start).Days;
@@ -241,8 +244,14 @@ namespace Core.Shared {
             }
         }
 
-        public static double degreesToRadians(double degrees) {
+        public static double degreesToRadians(double degrees)
+        {
             return degrees * Math.PI / 180;
+        }
+
+        public static string randomUUID()
+        {
+            return Guid.NewGuid().ToString();
         }
 
     }

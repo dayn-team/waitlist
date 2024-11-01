@@ -1,19 +1,29 @@
-﻿namespace Core.Domain.Enums {
-    public enum AccountType {
+﻿namespace Core.Domain.Enums
+{
+    public enum AccountType
+    {
         CUSTOMER,
         CLIENT,
         ADMIN
     }
-    public enum Privilege {
+    public enum Gender
+    {
+        MALE,
+        FEMALE
+    }
+    public enum Privilege
+    {
         SUPERADMIN = 200,
         ADMIN = 100,
     }
-    public enum AccountStatus {
+    public enum AccountStatus
+    {
         ACTIVE = 1,
         SUSPENDED = -1,
         DELETED = -2
     }
-    public enum OrderStatus {
+    public enum OrderStatus
+    {
         CANCELLED = -1,
         PENDING,
         PAID,
@@ -21,28 +31,43 @@
         COMPLETED
     }
 
-    public enum ActivityType {
+    public enum ActivityType
+    {
         LOGIN,
         ACCOUNT_STATUS
     }
 
-    public enum AuthType {
+    public enum AuthType
+    {
         EMAIL,
         OTP,
         SMS
     }
-    public enum TransactionType {
-        WITHDRAWAL,
-        PAYMENT,
-        POOL_FUNDING,
-        CARD_FUNDING
+    public enum TransactionType
+    {
+        LOAN,
+        LOAN_REPAYMENT
     }
-    public enum TransactionClass {
+    public enum RepaymentType
+    {
+        ONE_OFF,
+        INSTALLMENT
+    }
+    public enum EvidenceType
+    {
+        LOAN_DISPATCH,
+        LOAN_RECEIPT,
+        REPAYMENT_DISPATCH,
+        REPAYMENT_RECEIPT,
+    }
+    public enum TransactionClass
+    {
         DEBIT,
         CREDIT,
         UNCLASS
     }
-    public enum Events {
+    public enum Events
+    {
         TYPING,
         TYPING_STOPPED,
         MESSAGE_READ,
