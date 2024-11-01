@@ -1,4 +1,5 @@
 
+using Core.Domain.DTOs.Requests;
 using Core.Domain.Enums;
 
 using Core.Shared;
@@ -7,14 +8,17 @@ using Core.Shared;
 namespace Core.Domain.Entities;
 public class Transaction : BaseEntity
 {
-    public Transaction(string lenderId, string borrowerId, RepaymentType repaymentType)
+    public Transaction(TransactionDTO dto)
     {
-        id = Utilities.randomUUID();
-        this.lenderId = lenderId;
-        this.borrowerId = borrowerId;
-        this.borrowerId = borrowerId;
-        this.repaymentType = repaymentType;
-        this.createdOn = DateTimeOffset.UtcNow.ToUnixTimeSeconds(); ;
+        lenderId = dto.lenderId;
+        borrowerId = dto.borrowerId;
+        amount = dto.amount;
+        loanDate = dto.loanDate;
+        repaymentType = dto.repaymentType;
+        installmentAmount = dto.installmentAmount;
+        repaymentDuration = dto.repaymentDuration;
+        numberOfInstallments = dto.numberOfInstallments;
+        createdOn = DateTimeOffset.UtcNow.ToUnixTimeSeconds(); ;
     }
 
     public string lenderId { get; set; }

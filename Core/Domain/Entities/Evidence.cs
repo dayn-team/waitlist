@@ -1,4 +1,5 @@
 
+using Core.Domain.DTOs.Requests;
 using Core.Domain.Enums;
 
 using Core.Shared;
@@ -7,14 +8,14 @@ using Core.Shared;
 namespace Core.Domain.Entities;
 public class Evidence : BaseEntity
 {
-    public Evidence(string userId, string transactionId, string name, string url, EvidenceType type)
+    public Evidence(EvidenceDTO dto)
     {
-        this.userId = userId;
-        this.transactionId = transactionId;
-        this.name = name;
-        this.url = url;
-        this.type = type;
-        this.createdOn = DateTimeOffset.UtcNow.ToUnixTimeSeconds(); ;
+        userId = dto.userId;
+        transactionId = dto.transactionId;
+        name = dto.name;
+        url = dto.url;
+        type = dto.type;
+        createdOn = DateTimeOffset.UtcNow.ToUnixTimeSeconds(); ;
     }
 
     public string userId { get; set; }
