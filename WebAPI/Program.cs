@@ -1,32 +1,56 @@
-var builder = WebApplication.CreateBuilder(args);
+using AutoMapper;
+using Core.Domain.DTOs.Configurations;
+using Microsoft.AspNetCore.ResponseCompression;
+using Newtonsoft.Json.Linq;
+using StackExchange.Redis.Extensions.Core.Configuration;
 
+var builder = WebApplication.CreateBuilder(args);
+var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(builder.Environment.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+string fileName = string.Concat("appsettings.", builder.Environment.EnvironmentName, ".json");
+configBuilder.AddJsonFile(fileName, optional: true);
+var Configuration = configBuilder.Build();
+var appSettingsSection = Configuration.GetSection("SystemVariables");
+builder.Services.Configure<SystemVariables>(appSettingsSection);
+var appSettings = appSettingsSection.Get<SystemVariables>();
 // Add services to the container.
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () => {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateTime.Now.AddDays(index),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+builder.Services.AddCors(options => {
+    options.AddPolicy("CorsPolicy",
+    builder => builder.AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 });
 
+builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddResponseCompression(Options => {
+    Options.EnableForHttps = true;
+    Options.Providers.Add<GzipCompressionProvider>();
+});
+var t = appSettingsSection.GetSection("Redis").Get<RedisConfiguration>();
+builder.Services.AddStackExchangeRedisCache(options => {
+    options.Configuration = $"{t.Hosts[0].Host}:{t.Hosts[0].Port},password={t.Password},ssl={t.Ssl},abortConnect={t.AbortOnConnectFail}";
+});
+var cnfg = new MapperConfiguration(cfg => {
+    cfg.ShouldMapProperty = p => p.GetMethod.IsPublic || p.GetMethod.IsAssembly;
+    cfg.CreateMap<JValue, object>().ConvertUsing(source => source.Value);
+});
+var mapper = cnfg.CreateMapper();
+builder.Services.AddSingleton(mapper);
+Infrastructure.DI.Resolve.resolve(builder.Services);
+Core.Application.DI.Resolve.resolve(builder.Services);
+builder.Services.AddControllers();
+var app = builder.Build();
+app.UseWebSockets();
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+app.UseCors(builder =>
+                builder.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              );
 app.Run();
-
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary) {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
