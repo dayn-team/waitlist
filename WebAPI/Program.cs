@@ -31,6 +31,7 @@ builder.Services.AddResponseCompression(Options => {
     Options.Providers.Add<GzipCompressionProvider>();
 });
 var t = appSettingsSection.GetSection("Redis").Get<RedisConfiguration>();
+builder.Services.AddMemoryCache();
 builder.Services.AddStackExchangeRedisCache(options => {
     options.Configuration = $"{t.Hosts[0].Host}:{t.Hosts[0].Port},password={t.Password},ssl={t.Ssl},abortConnect={t.AbortOnConnectFail}";
 });
