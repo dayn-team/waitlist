@@ -1,36 +1,23 @@
-
 using Core.Domain.DTOs.Requests;
 using Core.Domain.Enums;
-
-using Core.Shared;
-
+using Core.Domain.ValueObjects;
+using System.Security.Policy;
 
 namespace Core.Domain.Entities;
-public class Transaction : BaseEntity
-{
-    public Transaction(TransactionDTO dto)
-    {
-        lenderId = dto.lenderId;
-        borrowerId = dto.borrowerId;
-        amount = dto.amount;
-        loanDate = dto.loanDate;
-        repaymentType = dto.repaymentType;
-        installmentAmount = dto.installmentAmount;
-        repaymentDuration = dto.repaymentDuration;
-        numberOfInstallments = dto.numberOfInstallments;
-        createdOn = DateTimeOffset.UtcNow.ToUnixTimeSeconds(); ;
+public class Transaction : BaseEntity {
+    public long dateCreated { get; protected set; }
+    public long loanDate { get; protected set; }
+    public double amount { get; protected set; }
+    public long paybackDate { get; protected set; }
+    public Participant owner { get; protected set; }
+    public List<Participant> witnesses { get; protected set; }
+    public Participant creditor { get; protected set; }
+    public CreatorClass createdBy { get; protected set; }
+    public LoanStatus status { get; protected set; }
+    public EvidenceFile loanEvidence { get; protected set; }
+    public EvidenceFile paymentEvidence { get; protected set; }
+
+    public Transaction(TransactionDTO dto) {
+        
     }
-
-    public string lenderId { get; set; }
-    public User? lender { get; set; }
-    public string borrowerId { get; set; }
-    public User? borrower { get; set; }
-    public int amount { get; set; }
-    public long loanDate { get; set; }
-    public RepaymentType repaymentType { get; set; }
-    public int installmentAmount { get; set; } // will be the same as loan amount if repayment type is one off
-    public int repaymentDuration { get; set; } // in years
-    public int numberOfInstallments { get; set; } // 1 if repayment type is one off
-    public long createdOn { get; set; }
-
 }

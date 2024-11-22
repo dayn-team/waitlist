@@ -22,13 +22,13 @@
         SUSPENDED = -1,
         DELETED = -2
     }
-    public enum OrderStatus
+    public enum LoanStatus
     {
         CANCELLED = -1,
+        AWAITING_WITNESSES,
         PENDING,
         PAID,
-        ASSIGNED,
-        COMPLETED
+        FORGIVEN
     }
 
     public enum ActivityType
@@ -84,5 +84,10 @@
         MESSAGE_READ_UPDATE,
         NEW_MESSAGE,
         TYPING_UPDATE
+    }
+
+    public enum CreatorClass {
+        CREDITOR,
+        LOANEE
     }
 }

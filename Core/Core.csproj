@@ -18,6 +18,5 @@
     <Folder Include="Application\Interfaces\Infrastructure\Repository\" />
     <Folder Include="Application\Interfaces\UseCases\" />
     <Folder Include="Application\UseCases\" />
-    <Folder Include="Domain\ValueObjects\" />
   </ItemGroup>
 </Project>
