@@ -90,4 +90,11 @@
         CREDITOR,
         LOANEE
     }
+
+    public enum PaymentFrequency {
+        DAILY,
+        WEEKLY,
+        MONTHLY,
+        YEARLY
+    }
 }

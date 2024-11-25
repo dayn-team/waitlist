@@ -1,9 +1,10 @@
-﻿using Infrastructure.Abstraction.Database.MongoDb;
+﻿using Core.Application.Interfaces.Infrastructure.Repository;
+using Infrastructure.Abstraction.Database.MongoDb;
 using System.Linq.Expressions;
 
-namespace Infrastructure.Repository.MongoDb
-{
-    public class BaseRepository<T> {
+namespace Infrastructure.Repository.MongoDb {
+
+    public class BaseRepository<T> : IBaseRepository<T> {
         private IMongoDbCommand _db;
         public BaseRepository(IMongoDbCommand db) {
             this._db = db;

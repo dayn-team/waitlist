@@ -1,16 +1,14 @@
 using Core.Domain.Enums;
+using Core.Domain.ValueObjects;
 
-namespace Core.Domain.DTOs.Requests
-{
-    public class TransactionDTO
-    {
-        public string lenderId { get; set; }
-        public string borrowerId { get; set; }
-        public int amount { get; set; }
+namespace Core.Domain.DTOs.Requests {
+    public class TransactionDTO {
         public long loanDate { get; set; }
-        public RepaymentType repaymentType { get; set; }
-        public int installmentAmount { get; set; }
-        public int repaymentDuration { get; set; }
-        public int numberOfInstallments { get; set; }
+        public double amount { get; set; }
+        public long paybackDate { get; set; }
+        public Participant otherParty { get; set; }
+        public List<Participant> witnesses { get; set; }
+        public PaymentPlan paymentPlan { get; set; }
+        public CreatorClass? createdBy { get; set; }
     }
 }

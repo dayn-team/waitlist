@@ -2,6 +2,7 @@ using Core.Application.Errors;
 using Core.Domain.Attributes;
 using Core.Domain.DTOs.Requests;
 using Core.Domain.Enums;
+using Core.Domain.ValueObjects;
 using Core.Shared;
 
 namespace Core.Domain.Entities;
@@ -30,5 +31,12 @@ public class User : BaseEntity {
         this.username = dto.username;
         password = new Cryptography.AES().encrypt(dto.password);
         createdOn = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    }
+    public Participant getProfileSummary() {
+        return new Participant {
+            fullname = $"{this.firstName} {this.lastName}",
+            gender = this.gender,
+            isConsent = false
+        };
     }
 }

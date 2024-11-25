@@ -15,7 +15,6 @@
     <PackageReference Include="NetCore.AutoRegisterDi" Version="2.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Application\Interfaces\Infrastructure\Repository\" />
     <Folder Include="Application\Interfaces\UseCases\" />
     <Folder Include="Application\UseCases\" />
   </ItemGroup>
