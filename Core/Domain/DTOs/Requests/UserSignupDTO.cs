@@ -9,5 +9,7 @@ namespace Core.Domain.DTOs.Requests {
         public string password { get; set; }
         public string phone { get; set; }
         public string username { get; set; }
+        public Privilege privilege { get; set; }
+        public AccountType type { get; set; }
     }
 }

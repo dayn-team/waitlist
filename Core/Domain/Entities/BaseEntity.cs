@@ -1,15 +1,12 @@
 ﻿using Core.Application.Errors;
 using Core.Shared;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 
-namespace Core.Domain.Entities
-{
+namespace Core.Domain.Entities {
     public abstract class BaseEntity
     {
         public BaseEntity()
         {
-            id = Utilities.randomUUID();
+            id = Cryptography.CharGenerator.genID(12, Cryptography.CharGenerator.characterSet.HEX_STRING);
         }
         public string id { get; protected set; }
 
