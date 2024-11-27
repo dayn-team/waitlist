@@ -70,6 +70,7 @@ namespace Core.Application.Interfaces.Infrastructure.Repository {
             Expression<Func<User, bool>> cond = F => F.id == user.id;
             return await update(updateObj, cond);
         }
+
         public async Task<bool> updatePassword(string password, string username, int passwordChanged = 1) {
             var updateObj = new { password, passwordChanged };
             Expression<Func<User, bool>> cond = F => F.username.ToLower() == username.ToLower();

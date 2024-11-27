@@ -63,7 +63,16 @@ public class Transaction : BaseEntity {
         var left = 4 - maleCount;
         if(left > 0) {
             if (left * 2 > femaleCount)
-                throw new InputError($"You need additional {left * 2 - femaleCount} female witnesse(s)");
+                throw new InputError($"You need additional {left * 2 - femaleCount} female witness(es)");
         }
+        if (witnesses.GroupBy(F => F.phone).Any(F => F.Count() > 1))
+            throw new InputError("Some repetition(s) exists in the witness list.");
+    }
+
+    public void addConsent(string personID) {
+        var witness = witnesses.Find(F => F.username == personID);
+        if (witness is null)
+            throw new InputError("Account not found in witness list");
+        witness.isConsent = true;
     }
 }

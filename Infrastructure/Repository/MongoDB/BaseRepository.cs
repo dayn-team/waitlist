@@ -1,10 +1,12 @@
 ﻿using Core.Application.Interfaces.Infrastructure.Repository;
+using Core.Domain.Entities;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Infrastructure.Abstraction.Database.MongoDb;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repository.MongoDb {
 
-    public class BaseRepository<T> : IBaseRepository<T> {
+    public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity {
         private IMongoDbCommand _db;
         public BaseRepository(IMongoDbCommand db) {
             this._db = db;
@@ -18,6 +20,11 @@ namespace Infrastructure.Repository.MongoDb {
             var filter = _db.getFilter<T>(clause);
             bool resp = await _db.delete<T>(filter);
             return resp;
+        }
+
+        public async Task<bool> delete(T data) {
+            Expression<Func<T, bool>> cond = F => F.id == data.id;
+            return await delete(cond);
         }
 
         public async Task<IEnumerable<T>> getAll() {
@@ -47,6 +54,11 @@ namespace Infrastructure.Repository.MongoDb {
         public async Task<bool> update(Dictionary<string, dynamic> data, Expression<Func<T, bool>> clause) {
             bool resp = await _db.update<T>(clause, data);
             return resp;
+        }
+
+        public async Task<bool> update(T data) {
+            Expression<Func<T, bool>> cond = F => F.id == data.id;
+            return await update(data, cond);
         }
     }
 }

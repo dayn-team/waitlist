@@ -12,7 +12,7 @@ namespace Core.Application.UseCases {
         private readonly SystemVariables _sysVar;
         private readonly ICacheService _cacheService;
         private readonly IIdentityManager _identity;
-        protected IdentityData profile;
+        protected IdentityData? profile;
         public BaseUseCase(IOptionsMonitor<SystemVariables> config, ICacheService cacheService, IIdentityManager identity) {
             _sysVar = config.CurrentValue;
             _identity = identity;

@@ -22,15 +22,13 @@ namespace Core.Application.UseCases {
         private readonly IEmailService _mail;
         private readonly PasswordManager _passManager;
         private readonly ICacheService _cache;
-        private readonly ITransactionRepository _trxRepo;
-        public AccountUseCase(IUserRepository account, IOptionsMonitor<SystemVariables> sysVar, IIdentityManager idenity, IEmailService email, ICacheService cache, ITransactionRepository trxRepo) : base(sysVar, cache, idenity) {
+        public AccountUseCase(IUserRepository account, IOptionsMonitor<SystemVariables> sysVar, IIdentityManager idenity, IEmailService email, ICacheService cache) : base(sysVar, cache, idenity) {
             _account = account;
             _sysVar = sysVar.CurrentValue;
             _idenity = idenity;
             _passManager = new PasswordManager(_sysVar.KeySalt);
             _mail = email;
             _cache = cache;
-            _trxRepo = trxRepo;
         }
         public async Task<WebResponse<object>> createAccount(UserSignupDTO account) {
             WebResponse response = new WebResponse();           
