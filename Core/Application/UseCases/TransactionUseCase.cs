@@ -50,13 +50,13 @@ namespace Core.Application.UseCases {
         public async Task<WebResponse<object>> createPaymentLog(RepaymentDTO repayment) {
             await verifySession();
             WebResponse response = new WebResponse();
-
+            throw new Exception();
         }
 
         public async Task<WebResponse<object>> createTransactionEntry(TransactionDTO transaction) {
             await verifySession();
             WebResponse response = new WebResponse();
-
+            throw new Exception();
         }
 
         public Task<WebResponse<object>> getPaymentLog(TransactionFilter filter) {
