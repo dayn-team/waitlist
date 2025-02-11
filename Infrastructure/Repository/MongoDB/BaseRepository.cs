@@ -1,6 +1,5 @@
 ﻿using Core.Application.Interfaces.Infrastructure.Repository;
 using Core.Domain.Entities;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Infrastructure.Abstraction.Database.MongoDb;
 using System.Linq.Expressions;
 

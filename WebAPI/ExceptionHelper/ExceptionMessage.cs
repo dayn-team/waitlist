@@ -41,6 +41,11 @@ namespace WebAPI.ExceptionHelper {
                 statusCode = respObj.statusCode;
                 return respObj;
             }
+            if (_exc is BadRequestError) {
+                var respObj = response.fail(ResponseCodes.INVALID_REQUEST, _exc.Message);
+                statusCode = respObj.statusCode;
+                return respObj;
+            }
 
             statusCode = 500;
 

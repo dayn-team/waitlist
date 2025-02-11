@@ -22,13 +22,15 @@ namespace Core.Application.UseCases {
         private readonly IEmailService _mail;
         private readonly PasswordManager _passManager;
         private readonly ICacheService _cache;
-        public AccountUseCase(IUserRepository account, IOptionsMonitor<SystemVariables> sysVar, IIdentityManager idenity, IEmailService email, ICacheService cache) : base(sysVar, cache, idenity) {
+        private readonly IWaitlistRepository _waitlist;
+        public AccountUseCase(IUserRepository account, IOptionsMonitor<SystemVariables> sysVar, IIdentityManager idenity, IEmailService email, ICacheService cache, IWaitlistRepository waitlist) : base(sysVar, cache, idenity) {
             _account = account;
             _sysVar = sysVar.CurrentValue;
             _idenity = idenity;
             _passManager = new PasswordManager(_sysVar.KeySalt);
             _mail = email;
             _cache = cache;
+            _waitlist = waitlist;
         }
         public async Task<WebResponse<object>> createAccount(UserSignupDTO account) {
             WebResponse response = new WebResponse();           
@@ -203,6 +205,26 @@ namespace Core.Application.UseCases {
             content = content.Replace("{{RequestType}}", "Password Reset");
             MailEnvelope mailParam = new MailEnvelope() { subject = $"Password Change Request", body = content, toAddress = new string[] { email }, toName = new string[] { username } };
             return await _mail.send(mailParam);
+        }
+
+        public async Task<WebResponse<object>> JoinWaitList(string fullname, string email) {
+            Waitlist wait = new Waitlist(fullname, email);
+            if (await _waitlist.MailExists(email))
+                throw new BadRequestError("Thank you for joining again but you have already joined the waitlist. You will be contacted when we have new update");
+            await _waitlist.create(wait);
+            string content = File.ReadAllText(@"MailTemplates\waitlist-confirmation.html");
+            content = content.Replace("{{PersonName}}", fullname);
+            var mail = await _mail.send(
+                new MailEnvelope {
+                    body = content,
+                    bodyIsPlainText = false,
+                    subject = "Thank You for Joining the Waitlist!",
+                    toAddress = new string[] { email },
+                    toName = new string[] { fullname }
+                }
+                );
+
+            return new WebResponse<object>().success();
         }
     }
 }

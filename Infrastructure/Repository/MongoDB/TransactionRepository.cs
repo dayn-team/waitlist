@@ -2,9 +2,11 @@
 using Core.Domain.Entities;
 using Infrastructure.Abstraction.Database.MongoDb;
 using Infrastructure.Repository.MongoDb;
+using NetCore.AutoRegisterDi;
 using System.Linq.Expressions;
 
 namespace Core.Application.Interfaces.Infrastructure.Repository {
+    [RegisterAsScoped]
     public class TransactionRepository : BaseRepository<Transaction>, ITransactionRepository {
         public TransactionRepository(IMongoDbCommand db) : base(db) {
         }
