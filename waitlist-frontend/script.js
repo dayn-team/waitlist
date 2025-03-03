@@ -27,6 +27,16 @@ document.getElementById("waitlistForm").addEventListener("submit", function (eve
             verifiedImage.style.display = "block";
         }
 
+        let subtextMessage = document.getElementById("subtextMessage");
+        if (subtextMessage) {
+            subtextMessage.textContent = "You’re in! Welcome to the future of Shari’ah-compliant, secure, and ethical financial documentation. Stay tuned for exclusive updates and next steps!"
+        }
+
+        let waitlistFormInput = document.getElementById("waitlistFormInput");
+        if (waitlistFormInput) {
+            waitlistFormInput.style.display = "none";
+        }
+
         let heading = document.getElementById("headingMessage");
         if (heading) {
             heading.textContent = "🎉 You have successfully joined the Waitlist!";
