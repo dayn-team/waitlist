@@ -161,6 +161,9 @@ small {
     background-color: var(--DarkGreen);
 }
 
+button:disabled {
+    cursor: not-allowed;
+}
 
 
 
