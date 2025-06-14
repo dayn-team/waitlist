@@ -1,4 +1,4 @@
-﻿using Infrastructure.DTO;
+﻿using Infrastructure.Model;
 
 namespace Infrastructure.Abstraction.HTTP {
     public interface IHttpClient {

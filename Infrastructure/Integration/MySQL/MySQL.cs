@@ -6,7 +6,7 @@ using NetCore.AutoRegisterDi;
 using Newtonsoft.Json;
 using System.Data;
 
-namespace Infrastructure.Libraries.MySQL {
+namespace Infrastructure.Integration.MySQL {
     [RegisterAsScoped]
     public class MySQLDB : IDBCommand, IDisposable {
         private string connectionString;
@@ -17,8 +17,8 @@ namespace Infrastructure.Libraries.MySQL {
         public int lastAffectedRows { get; set; }
         public MySQLDB(IOptionsMonitor<SystemVariables> config) {
             DBConfig param = config.CurrentValue.MySQL;
-            this.connectionString = string.Concat($"server={param.server};username={param.username};password={param.password};database={param.database};Max Pool Size=300;SslMode={param.sslMode};UseAffectedRows=True");
-            this._connect();
+            connectionString = string.Concat($"server={param.server};username={param.username};password={param.password};database={param.database};Max Pool Size=300;SslMode={param.sslMode};UseAffectedRows=True");
+            _connect();
         }
         private void _connect() {
             MySqlConnection ms;
@@ -60,7 +60,7 @@ namespace Infrastructure.Libraries.MySQL {
                 if (command == null)
                     _generateCommand();
                 command.CommandText = statement;
-                command.CommandType = System.Data.CommandType.Text;
+                command.CommandType = CommandType.Text;
                 clearParams();
             } catch {
                 closeCommand();
@@ -152,7 +152,7 @@ namespace Infrastructure.Libraries.MySQL {
             MySqlCommand command;
             try {
                 command = connection.CreateCommand();
-                command.Connection = this.connection;
+                command.Connection = connection;
                 this.command = command;
             } catch {
                 closeCommand();
@@ -170,8 +170,8 @@ namespace Infrastructure.Libraries.MySQL {
             } catch { }
         }
         private void closeCommand() {
-            this.command?.Dispose();
-            this.command = null;
+            command?.Dispose();
+            command = null;
         }
     }
 }

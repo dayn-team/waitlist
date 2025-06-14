@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using NetCore.AutoRegisterDi;
 
-namespace Infrastructure.Libraries.FileStorage {
+namespace Infrastructure.Integration.FileStorage {
     [DoNotAutoRegister]
     public class GoogleCloudStorage : IFileStorage {
         private readonly SystemVariables? _sysVar;
@@ -14,25 +14,25 @@ namespace Infrastructure.Libraries.FileStorage {
         private readonly StorageClient storageClient;
         private readonly string bucketName;
         public GoogleCloudStorage(IOptionsMonitor<SystemVariables> config) {
-            this._sysVar = config.CurrentValue;
+            _sysVar = config.CurrentValue;
             googleCredential = GoogleCredential.FromFile(_sysVar.GoogleCloudStorageConfig.credentialFile);
             storageClient = StorageClient.Create(googleCredential);
-            this.bucketName = _sysVar.GoogleCloudStorageConfig.bucketName;
+            bucketName = _sysVar.GoogleCloudStorageConfig.bucketName;
         }
 
         public GoogleCloudStorage(string keyFile, string bucketName) {
-            this._sysVar = null;
+            _sysVar = null;
             googleCredential = GoogleCredential.FromFile(keyFile);
             storageClient = StorageClient.Create(googleCredential);
             this.bucketName = bucketName;
         }
 
-        public async Task<bool> deleteFile(string fileName) {
+        public async Task<bool> DeleteFile(string fileName) {
             await storageClient.DeleteObjectAsync(bucketName, fileName);
             return true;
         }
 
-        public async Task<string> uploadFileAsync(IFormFile file, string fileName) {
+        public async Task<string> UploadFileAsync(IFormFile file, string fileName) {
             using (var memoryStream = new MemoryStream()) {
                 await file.CopyToAsync(memoryStream);
                 var dataObject = await storageClient.UploadObjectAsync(bucketName, fileName, null, memoryStream);
@@ -40,7 +40,7 @@ namespace Infrastructure.Libraries.FileStorage {
             }
         }
 
-        public async Task<bool> getFileInto(string fileName, string nFile) {
+        public async Task<bool> GetFileInto(string fileName, string nFile) {
             using var outputFile = File.OpenWrite(nFile);
             await storageClient.DownloadObjectAsync(bucketName, fileName, outputFile);
             return true;
@@ -50,7 +50,7 @@ namespace Infrastructure.Libraries.FileStorage {
             throw new NotImplementedException();
         }
 
-        public string getSASToken(string filename, string fullFile, string contentType, long SASExpiryMins = -1) {
+        public string GetSASToken(string filename, string fullFile, string contentType, long SASExpiryMins = -1) {
             throw new NotImplementedException();
         }
     }

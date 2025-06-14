@@ -1,6 +1,6 @@
 ﻿using Core.Application.Errors;
-using Core.Application.Interfaces.Email;
 using Core.Application.Interfaces.Infrastructure.Cache;
+using Core.Application.Interfaces.Infrastructure.Email;
 using Core.Application.Interfaces.Infrastructure.Identity;
 using Core.Application.Interfaces.Infrastructure.Repository;
 using Core.Application.Interfaces.UseCases;
@@ -32,40 +32,50 @@ namespace Core.Application.UseCases {
             _cache = cache;
             _waitlist = waitlist;
         }
-        public async Task<WebResponse<object>> createAccount(UserSignupDTO account) {
-            WebResponse response = new WebResponse();           
-            await verifyFields(account);
-            account.password = _passManager.getDigest(account.password);
-            account.privilege = Privilege.SUPERADMIN;
-            account.type = AccountType.CUSTOMER;
+        public async Task<WebResponse<object>> CreateAccount(UserSignupDTO account) {
+            WebResponse response = new WebResponse();
+            account.Privilege = Privilege.SUPERADMIN;
+            account.Type = AccountType.CUSTOMER;
+
+            if (account.Country is null)
+                throw new InputError("Country is a required field");
+
+            var countryData = GetCountryInfo().ToList().Find(F => F.isoAlpha2 == account.Country.Code || F.isoAlpha3 == account.Country.Code);
+            if (countryData is null)
+                throw new InputError("Invalid Country Code");
+            var country = countryData.ToCountryObject();
+            country.PhoneExtension = account.Country.PhoneExtension;
+            account.Country = country;
             User accountObj = new User(account, _passManager.getDigest);
-            string key = account.username + "_mlv";
-            await _cache.addWithKey(key, Utilities.getTodayDate().unixTimestamp.ToString(), 7200);
-            await sendWelcomeEmailVerification(account.username, accountObj.id, account.email);
-            await _account.create(accountObj);
+
+            await verifyFields(account);
+            string key = account.Username + "_mlv";
+            await _cache.AddWithKey(key, Utilities.GetTodayDate().unixTimestamp.ToString(), 7200);
+            await sendWelcomeEmailVerification(account.Username, accountObj.Id, account.Email);
+            await _account.Create(accountObj);
             return response.success("Account has been created for you. Kindly check your email for verification link");
         }
 
-        public async Task<WebResponse<object>> verifyAccount(string code) {
+        public async Task<WebResponse<object>> VerifyAccount(string code) {
             WebResponse response = new WebResponse();
             var key = $"{code}_mlv";
-            var d = await _cache.getWithKey(key);
+            var d = await _cache.GetWithKey(key);
             if (string.IsNullOrEmpty(d))
                 throw new InputError("Verification is expired or invalid");
-            var account = await _account.get(new AccountFilter { externalID = code });
+            var account = await _account.Get(new AccountFilter { externalID = code });
             if (account == null || account.Count() < 1) {
                 throw new InputError("Invalid Profile. This link is not valid");
             }
-            await _cache.deleteWithKey(key);
+            await _cache.DeleteWithKey(key);
             return response.success("Account has been verified. Thank you");
         }
 
         private async Task verifyFields(UserSignupDTO account) {
-            if (await _account.accountExists(new AccountFilter { username = account.username }))
-                throw new LogicError($"{account.username} as a username has been taken");
-            if (await _account.accountExists(new AccountFilter { phone = account.phone }))
+            if (await _account.AccountExists(new AccountFilter { username = account.Username }))
+                throw new LogicError($"{account.Username} as a username has been taken");
+            if (await _account.AccountExists(new AccountFilter { phone = account.Phone }))
                 throw new LogicError("This phone number cannot be used");
-            if (await _account.accountExists(new AccountFilter { email = account.email }))
+            if (await _account.AccountExists(new AccountFilter { email = account.Email }))
                 throw new LogicError("This email address cannot be used");
         }
 
@@ -75,28 +85,28 @@ namespace Core.Application.UseCases {
             string url = $"{_sysVar.siteRoot}onboard-verify/{urlcode}";
             content = content.Replace("{{VerificationURL}}", url);
             MailEnvelope mailParam = new MailEnvelope() { subject = $"Welcome to TAP Global Card", body = content, toAddress = new string[] { email }, toName = new string[] { username } };
-            return await _mail.send(mailParam);
+            return await _mail.Send(mailParam);
         }
 
-        public async Task<WebResponse<object>> login(string username, string password) {
+        public async Task<WebResponse<object>> Login(string username, string password) {
             WebResponse response = new WebResponse();
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 throw new InputError("Username and password is required");
             string encPassword = _passManager.getDigest(password);
-            var account = await _account.get(new AccountFilter { username = username, password = encPassword });
+            var account = await _account.Get(new AccountFilter { username = username, password = encPassword });
             if (account.Count < 1)
                 return response.fail(ResponseCodes.USER_DOES_NOT_EXIST, $"Username and Password match not found");
-            if (account[0].status == AccountStatus.DELETED)
+            if (account[0].Status == AccountStatus.DELETED)
                 return response.fail(ResponseCodes.USER_DOES_NOT_EXIST);
-            if (account[0].status == AccountStatus.SUSPENDED)
+            if (account[0].Status == AccountStatus.SUSPENDED)
                 return response.fail(ResponseCodes.ACCESS_DENIED_ERROR, "Account has been suspended. Contact Admin");
-            if (account.First().type == AccountType.CUSTOMER) {
-                if (account.First().mailVerified) {
-                    var code = $"{account[0].id}_mlv";
-                    var b = await _cache.getWithKey(code);
+            if (account.First().Type == AccountType.CUSTOMER) {
+                if (account.First().MailVerified) {
+                    var code = $"{account[0].Id}_mlv";
+                    var b = await _cache.GetWithKey(code);
                     if (string.IsNullOrEmpty(b)) {
-                        await _cache.addWithKey(code, Utilities.getTodayDate().unixTimestamp.ToString(), 7200);
-                        await sendWelcomeEmailVerification(account.First().username, account.First().id, account.First().email);
+                        await _cache.AddWithKey(code, Utilities.GetTodayDate().unixTimestamp.ToString(), 7200);
+                        await sendWelcomeEmailVerification(account.First().Username, account.First().Id, account.First().Email);
                     }
                     throw new AuthenticationError("Please check your email to confirm your email address");
                 }
@@ -106,15 +116,15 @@ namespace Core.Application.UseCases {
             string message = "Authentication Complete";
             int loginComplete = 1;
             string next = string.Empty;
-            if (account[0].type != AccountType.CUSTOMER || account[0].tfa == 1) {
+            if (account[0].Type != AccountType.CUSTOMER || account[0].Tfa == 1) {
                 message = "Kindly Complete 2fa";
                 next = "2faAuth";
-                setuptfa = account[0].tfa == 1 ? false : true;
+                setuptfa = account[0].Tfa == 1 ? false : true;
                 if (setuptfa) {
                     message = "Kindly Proceed to setting up your Two Factor Authentication";
                     next = "2faSetup";
                 }
-                if (account[0].passwordChanged == 0) {
+                if (account[0].PasswordChanged == 0) {
                     changePasswordPrompt = true;
                     message = "Kindly Change your Password to Continue";
                     next = "PasswordChange";
@@ -122,21 +132,21 @@ namespace Core.Application.UseCases {
                 loginComplete = 0;
             }
             var identityObj = account[0].login(_idenity);
-            identityObj.loginComplete = loginComplete;
-            identityObj.pwca = changePasswordPrompt ? 1 : 0;
-            identityObj.tfaa = setuptfa ? 1 : 0;
+            identityObj.LoginComplete = loginComplete;
+            identityObj.Pwca = changePasswordPrompt ? 1 : 0;
+            identityObj.Tfaa = setuptfa ? 1 : 0;
             var token = getJWTToken(identityObj);
-            string loginDetails = $"Account Login details Username: {username} \n Type: Password Login \n IP: {_idenity.IPAddress} \n useragent : {_idenity.useragent}";
-            await _account.loginUpdate(account[0]);
-            await saveSession(account[0].type, account[0].username, account[0].publicKey);
+            string loginDetails = $"Account Login details Username: {username} \n Type: Password Login \n IP: {_idenity.IPAddress} \n useragent : {_idenity.Useragent}";
+            await _account.LoginUpdate(account[0]);
+            await SaveSession(account[0].Type, account[0].Username, account[0].PublicKey);
             return response.success(message, new { token, profile = identityObj, changePasswordPrompt, setuptfaRequired = setuptfa, next });
         }
 
-        public async Task<WebResponse<object>> updatePassword(string password) {
+        public async Task<WebResponse<object>> UpdatePassword(string password) {
             WebResponse response = new WebResponse();
-            await verifySession(true, false);
-            if (profile.pwca == 0) {
-                await verifySession();
+            await VerifySession(true, false);
+            if (profile.Pwca == 0) {
+                await VerifySession();
             }
             if (string.IsNullOrEmpty(password))
                 throw new InputError("Invalid Request. Password is required");
@@ -145,76 +155,76 @@ namespace Core.Application.UseCases {
             if (!Utilities.passwordCase(password))
                 throw new InputError("Password must contain at least one each of an Uppercase, lowercase, a numeric charcater and a special character");
             string encPassword = _passManager.getDigest(password);
-            await _account.updatePassword(encPassword, profile.username);
-            if (profile.pwca == 1) {
-                profile.pwca = 0;
+            await _account.UpdatePassword(encPassword, profile.Username);
+            if (profile.Pwca == 1) {
+                profile.Pwca = 0;
                 var token = getJWTToken(profile);
                 return response.success("Token has been updated", new { token });
             }
             return response.success();
         }
 
-        public Task<WebResponse<object>> updateAccount(UserSignupDTO account) {
+        public Task<WebResponse<object>> UpdateAccount(UserSignupDTO account) {
             throw new NotImplementedException();
         }
 
-        public Task<WebResponse<object>> retrievePassword(string username, string password) {
+        public Task<WebResponse<object>> RetrievePassword(string username, string password) {
             throw new NotImplementedException();
         }
-        public async Task<WebResponse<object>> resetPassword(string username, string email) {
+        public async Task<WebResponse<object>> ResetPassword(string username, string email) {
             WebResponse response = new WebResponse();
             if (string.IsNullOrEmpty(username) && string.IsNullOrEmpty(email))
                 throw new InputError("Invalid Request. Username or email is required");
             List<User> user;
             if (!string.IsNullOrEmpty(username)) {
-                user = await _account.get(new AccountFilter { username = username });
+                user = await _account.Get(new AccountFilter { username = username });
             } else {
-                user = await _account.get(new AccountFilter { email = email });
+                user = await _account.Get(new AccountFilter { email = email });
             }
             if (user.Count < 1)
                 throw new InputError("Account was not found");
             string password = Cryptography.CharGenerator.genID(8, Cryptography.CharGenerator.characterSet.HEX_STRING);
             string encPassword = _passManager.getDigest(password);
-            await _account.updatePassword(encPassword, user[0].username, 0);
-            await sendPasswordResetEmail(user[0].username, password, user[0].email);
+            await _account.UpdatePassword(encPassword, user[0].Username, 0);
+            await sendPasswordResetEmail(user[0].Username, password, user[0].Email);
             return response.success();
         }
 
         private string getJWTToken(IdentityData profile) {
             Dictionary<string, string> tokenObj = new Dictionary<string, string> {
-                { "username", profile.username },
-                { "fullname", profile.fullname },
-                { "publicKey", profile.publicKey },
-                { "dateIssued", profile.dateIssued.ToString() },
-                { "accountType", profile.accountType.ToString() },
-                { "accountPrivilege", profile.accountPrivilege.ToString() },
-                { "externalID", profile.externalID },
-                { "status", profile.status.ToString() },
-                { "loginComplete", profile.loginComplete.ToString() },
-                { "pwca", profile.pwca.ToString() },
-                { "tfaa", profile.tfaa.ToString() }
+                { "username", profile.Username },
+                { "fullname", profile.Fullname },
+                { "publicKey", profile.PublicKey },
+                { "dateIssued", profile.DateIssued.ToString() },
+                { "accountType", profile.AccountType.ToString() },
+                { "accountPrivilege", profile.AccountPrivilege.ToString() },
+                { "externalID", profile.ExternalID },
+                { "status", profile.Status.ToString() },
+                { "loginComplete", profile.LoginComplete.ToString() },
+                { "pwca", profile.Pwca.ToString() },
+                { "tfaa", profile.Tfaa.ToString() }
         };
-            return _idenity.getJWTIdentity(tokenObj);
+            return _idenity.GetJWTIdentity(tokenObj);
 
         }
 
         private async Task<bool> sendPasswordResetEmail(string username, string password, string email) {
             string content = File.ReadAllText(@"MailTemplates\generalTemplate.html");
-            string body = $"<h3>Your password has been reset. Use the following information to login</h3><blockquote align='center' style='font-size:16px; color:maroon;'>Username: {username} <br/> Password: {password} <br/> <blockquote><h4>Request Details</h4> UserAgent : {_idenity.useragent} <br/> IP: {_idenity.IPAddress} </blockquote></blockquote><strong>This is an interim credential. Please login and change your password immediately</strong><br/><i>Please do not share this email with a third party. If you did not request a password change, login and change your password, no further action is required.</i>";
+            string body = $"<h3>Your password has been reset. Use the following information to login</h3><blockquote align='center' style='font-size:16px; color:maroon;'>Username: {username} <br/> Password: {password} <br/> <blockquote><h4>Request Details</h4> UserAgent : {_idenity.Useragent} <br/> IP: {_idenity.IPAddress} </blockquote></blockquote><strong>This is an interim credential. Please login and change your password immediately</strong><br/><i>Please do not share this email with a third party. If you did not request a password change, login and change your password, no further action is required.</i>";
             content = content.Replace("{{RequestBody}}", body);
             content = content.Replace("{{RequestType}}", "Password Reset");
             MailEnvelope mailParam = new MailEnvelope() { subject = $"Password Change Request", body = content, toAddress = new string[] { email }, toName = new string[] { username } };
-            return await _mail.send(mailParam);
+            return await _mail.Send(mailParam);
         }
 
         public async Task<WebResponse<object>> JoinWaitList(string fullname, string email) {
             Waitlist wait = new Waitlist(fullname, email);
             if (await _waitlist.MailExists(email))
                 throw new BadRequestError("Thank you for joining again but you have already joined the waitlist. You will be contacted when we have new update");
-            await _waitlist.create(wait);
+            await _waitlist.Create(wait);
             string content = File.ReadAllText(@"MailTemplates\waitlist-confirmation.html");
             content = content.Replace("{{PersonName}}", fullname);
-            var mail = await _mail.send(
+            var mail = await _mail.Send(
                 new MailEnvelope {
                     body = content,
                     bodyIsPlainText = false,

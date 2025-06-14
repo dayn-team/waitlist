@@ -4,31 +4,31 @@ using Core.Shared;
 
 namespace Core.Domain.Entities {
     public class Repayment : BaseEntity{
-        public string transaction { get; protected set; }
-        public Participant payer { get; protected set; }
-        public EvidenceFile paymentEvidence { get; protected set; }
-        public double amountPaid { get; protected set; }
-        public long transDate { get; protected set; }
-        public List<Message> disputeLog { get; protected set; }
-        public bool verified { get; protected set; }
+        public string Transaction { get; protected set; }
+        public Participant Payer { get; protected set; }
+        public EvidenceFile PaymentEvidence { get; protected set; }
+        public double AmountPaid { get; protected set; }
+        public long TransDate { get; protected set; }
+        public List<Message> DisputeLog { get; protected set; }
+        public bool Verified { get; protected set; }
         public Repayment() { }
         public Repayment(RepaymentDTO repayment, Transaction trx, User user) {
-            this.transaction = trx.id;
-            this.payer = trx.owner;
-            this.amountPaid = repayment.amountPaid;
-            this.transDate = Utilities.getTodayDate().unixTimestamp;
-            this.disputeLog = new List<Message>();
-            this.verified = user.phone == trx.owner.phone? false : true;
-            this.paymentEvidence = repayment.paymentEvidence;
+            this.Transaction = trx.Id;
+            this.Payer = trx.Owner;
+            this.AmountPaid = repayment.amountPaid;
+            this.TransDate = Utilities.GetTodayDate().unixTimestamp;
+            this.DisputeLog = new List<Message>();
+            this.Verified = user.Phone == trx.Owner.Phone? false : true;
+            this.PaymentEvidence = repayment.paymentEvidence;
         }
 
-        public void addComment(Message message, string? toID = null) {
+        public void AddComment(Message message, string? toID = null) {
             if (string.IsNullOrEmpty(toID))
-                this.disputeLog.Add(message);
-            var data = disputeLog.Find(F => F.messageID == toID);
+                this.DisputeLog.Add(message);
+            var data = DisputeLog.Find(F => F.MessageID == toID);
             if (data is null)
                 return;
-            data.responses.Add(message);
+            data.Responses.Add(message);
         }
     }
 }

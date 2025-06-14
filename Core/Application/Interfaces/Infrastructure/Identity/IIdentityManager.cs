@@ -1,15 +1,15 @@
 ﻿namespace Core.Application.Interfaces.Infrastructure.Identity {
     public interface IIdentityManager {
-        string message { get; }
-        string useragent { get; }
-        bool valid { get; }
-        bool sessionValid();
-        string getJWTIdentity(Dictionary<string, string> identity, int expiry = 0);
-        T getProfile<T>();
-        string getHeaderValue(string key);
-        IDictionary<string, object> getAllHeader();
-        void loadCustomHeaders(IDictionary<string, object> header);
+        string Message { get; }
+        string Useragent { get; }
+        bool Valid { get; }
+        bool SessionValid();
+        string GetJWTIdentity(Dictionary<string, string> identity, int expiry = 0);
+        T GetProfile<T>();
+        string GetHeaderValue(string key);
+        IDictionary<string, object> GetAllHeader();
+        void LoadCustomHeaders(IDictionary<string, object> header);
         string IPAddress { get; }
-        string endPointAddress { get; }
+        string EndPointAddress { get; }
     }
 }

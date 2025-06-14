@@ -2,9 +2,9 @@
 
 namespace Core.Application.Interfaces.Infrastructure.File {
     public interface IFileStorage {
-        Task<string> uploadFileAsync(IFormFile file, string fileName);
-        Task<bool> deleteFile(string fileName);
-        Task<bool> getFileInto(string fileName, string nFile);
-        string getSASToken(string filename, string fullFile, string contentType, long SASExpiryMins = -1);
+        Task<string> UploadFileAsync(IFormFile file, string fileName);
+        Task<bool> DeleteFile(string fileName);
+        Task<bool> GetFileInto(string fileName, string nFile);
+        string GetSASToken(string filename, string fullFile, string contentType, long SASExpiryMins = -1);
     }
 }

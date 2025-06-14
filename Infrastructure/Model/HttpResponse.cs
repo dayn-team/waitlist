@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Infrastructure.DTO {
+namespace Infrastructure.Model {
     public class HttpResponse {
         public string response { get; set; }
         public int statusCode { get; set; }

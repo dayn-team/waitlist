@@ -3,43 +3,43 @@ using Core.Shared;
 
 namespace Core.Domain.DTOs.Others {
     public class IdentityData {
-        public string username { get; set; }
-        public string fullname { get; set; }
-        public string publicKey { get; set; }
-        public long dateIssued { get; set; } = Utilities.getTodayDate().unixTimestamp;
-        public int? accountType { get; set; }
-        public int? accountPrivilege { get; set; }
-        public string id { get; set; }
-        public int status { get; set; }
-        public string device { get; set; }
-        public string externalID { get; set; }
-        public int loginComplete { get; set; }
-        public int pwca { get; set; }
-        public int tfaa { get; set; }
-        public int tfaen { get; set; }
+        public string Username { get; set; }
+        public string Fullname { get; set; }
+        public string PublicKey { get; set; }
+        public DateTime DateIssued { get; set; } = DateTime.Now;
+        public int? AccountType { get; set; }
+        public int? AccountPrivilege { get; set; }
+        public string Id { get; set; }
+        public int Status { get; set; }
+        public string Device { get; set; }
+        public string ExternalID { get; set; }
+        public int LoginComplete { get; set; }
+        public int Pwca { get; set; }
+        public int Tfaa { get; set; }
+        public int Tfaen { get; set; }
 
-        public AccountType getAccountType() {
-            if (accountType == null)
+        public AccountType GetAccountType() {
+            if (AccountType == null)
                 return default(AccountType);
-            return (AccountType)(int)accountType;
+            return (AccountType)(int)AccountType;
         }
 
-        public Privilege getAccountPrivilege() {
-            if (accountPrivilege == null)
+        public Privilege GetAccountPrivilege() {
+            if (AccountPrivilege == null)
                 return default(Privilege);
-            return (Privilege)(int)accountPrivilege;
+            return (Privilege)(int)AccountPrivilege;
         }
 
-        public Dictionary<string, string> getTokenObj() {
+        public Dictionary<string, string> GetTokenObj() {
             Dictionary<string, string> tokenObj = new Dictionary<string, string>();
-            tokenObj.Add("username", username.ToLower());
-            tokenObj.Add("id", id);
-            tokenObj.Add("fullname", fullname);
-            tokenObj.Add("dateIssued", Utilities.getTodayDate().unixTimestamp.ToString());
-            tokenObj.Add("accountPrivilege", (accountPrivilege).ToString());
-            tokenObj.Add("accountType", ((int)accountType).ToString());
-            tokenObj.Add("publicKey", publicKey);
-            tokenObj.Add("device", device);
+            tokenObj.Add("username", Username.ToLower());
+            tokenObj.Add("id", Id);
+            tokenObj.Add("fullname", Fullname);
+            tokenObj.Add("dateIssued", Utilities.GetTodayDate().unixTimestamp.ToString());
+            tokenObj.Add("accountPrivilege", (AccountPrivilege).ToString());
+            tokenObj.Add("accountType", ((int)AccountType).ToString());
+            tokenObj.Add("publicKey", PublicKey);
+            tokenObj.Add("device", Device);
             return tokenObj;
         }
     }

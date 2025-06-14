@@ -14,12 +14,12 @@ namespace Infrastructure.Integration.Authentication {
         private readonly IHttpContextAccessor _contextAccessor;
         private protected IHeaderDictionary headers;
         private protected JObject profile;
-        public bool valid { get; private set; }
-        public string message { get; private set; }
+        public bool Valid { get; private set; }
+        public string Message { get; private set; }
         public string IPAddress { get; private set; }
-        public string useragent { get; private set; }
+        public string Useragent { get; private set; }
         private readonly JWTIdentity tokenMngr;
-        public string endPointAddress { get; private set; }
+        public string EndPointAddress { get; private set; }
         public IdentityManager(IOptionsMonitor<SystemVariables> config, IHttpContextAccessor contextAccessor) {
             _config = config.CurrentValue;
             _contextAccessor = contextAccessor;
@@ -31,12 +31,12 @@ namespace Infrastructure.Integration.Authentication {
         }
         private void getRoute() {
             try {
-                endPointAddress = _contextAccessor.HttpContext.Request.Path;
+                EndPointAddress = _contextAccessor.HttpContext.Request.Path;
             } catch { }
         }
         private void getUserAgent() {
             try {
-                useragent = getHeaderValue("User-Agent").ToString();
+                Useragent = GetHeaderValue("User-Agent").ToString();
             } catch { }
         }
         private void getIPAddress() {
@@ -44,14 +44,14 @@ namespace Infrastructure.Integration.Authentication {
             string altIPAddress = null;
             try {
                 try {
-                    ipAddresses = getHeaderValue("X-Forwarded-For").ToString().Split(':');
+                    ipAddresses = GetHeaderValue("X-Forwarded-For").ToString().Split(':');
                 } catch { }
                 altIPAddress = _contextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
             } catch { }
             var ipAddress = string.IsNullOrEmpty(ipAddresses[0]) ? altIPAddress : ipAddresses[0];
             IPAddress = ipAddress;
         }
-        public void loadCustomHeaders(IDictionary<string, object> header) {
+        public void LoadCustomHeaders(IDictionary<string, object> header) {
             var headersUsable = new Dictionary<string, StringValues>();
             foreach (var kvp in header) {
                 try {
@@ -69,9 +69,9 @@ namespace Infrastructure.Integration.Authentication {
             this.headers = headers;
             loadProfile(_config.KeyExpires);
         }
-        public bool sessionValid() {
+        public bool SessionValid() {
             loadProfile(_config.KeyExpires);
-            return valid;
+            return Valid;
         }
 
         private void loadProfile(bool enforceExpiryCheck = true) {
@@ -83,25 +83,25 @@ namespace Infrastructure.Integration.Authentication {
                     if (auths.Length >= 2) {
                         h = auths[^1];
                         profile = tokenMngr.verifyToken(h, enforceExpiryCheck ? enforceExpiryCheck : _config.JWTSettings.identityExpires);
-                        valid = profile != null;
-                        if (!valid)
-                            message = "The authentication is invalid or expired";
-                    } else { valid = false; message = "Authorization Header is not valid. Login again or contact admin"; }
-                } else { valid = false; message = "Authorization Header is missing in request"; }
+                        Valid = profile != null;
+                        if (!Valid)
+                            Message = "The authentication is invalid or expired";
+                    } else { Valid = false; Message = "Authorization Header is not valid. Login again or contact admin"; }
+                } else { Valid = false; Message = "Authorization Header is missing in request"; }
             } catch {
-                valid = false;
-                message = "Authorization Header is missing in request";
+                Valid = false;
+                Message = "Authorization Header is missing in request";
             }
         }
-        public string getJWTIdentity(Dictionary<string, string> identity, int expiry = 0) {
+        public string GetJWTIdentity(Dictionary<string, string> identity, int expiry = 0) {
             return tokenMngr.getToken(identity, expiry < 1 ? _config.JWTSettings.identityExpiryMins : expiry);
         }
-        public string getHeaderValue(string key) {
+        public string GetHeaderValue(string key) {
             StringValues p;
             headers.TryGetValue(key, out p);
             return p;
         }
-        public IDictionary<string, object> getAllHeader() {
+        public IDictionary<string, object> GetAllHeader() {
             var comparer = StringComparer.OrdinalIgnoreCase;
             IDictionary<string, object> snew = new Dictionary<string, object>(comparer);
             foreach (KeyValuePair<string, StringValues> val in headers) {
@@ -109,7 +109,7 @@ namespace Infrastructure.Integration.Authentication {
             }
             return snew;
         }
-        public T getProfile<T>() {
+        public T GetProfile<T>() {
             return profile.ToObject<T>();
         }
     }

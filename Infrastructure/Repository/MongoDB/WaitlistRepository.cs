@@ -12,7 +12,7 @@ namespace Infrastructure.Repository.MongoDB {
         }
         public async Task<bool> MailExists(string email) {
             Expression<Func<Waitlist, bool>> filter = F => F.Email == email;
-            return (await getByCondition(filter)).Any();
+            return (await GetByCondition(filter)).Any();
         }
     }
 }

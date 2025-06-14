@@ -4,9 +4,9 @@ using Core.Shared;
 namespace Core.Domain.Entities {
     public abstract class BaseEntity {
         public BaseEntity() {
-            id = Cryptography.CharGenerator.genID(12, Cryptography.CharGenerator.characterSet.HEX_STRING);
+            Id = Cryptography.CharGenerator.genID(12, Cryptography.CharGenerator.characterSet.HEX_STRING);
         }
-        public string id { get; protected set; }
+        public string Id { get; protected set; }
 
         public void cannotBeNull(params string[] objs) {
             foreach (string data in objs)

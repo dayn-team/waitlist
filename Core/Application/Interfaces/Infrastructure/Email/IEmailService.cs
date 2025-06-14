@@ -1,7 +1,7 @@
 ﻿using Core.Domain.DTOs.Others;
 
-namespace Core.Application.Interfaces.Email {
+namespace Core.Application.Interfaces.Infrastructure.Email {
     public interface IEmailService {
-        Task<bool> send(MailEnvelope envelope);
+        Task<bool> Send(MailEnvelope envelope);
     }
 }

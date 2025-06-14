@@ -18,7 +18,7 @@ namespace Infrastructure.Integration.Cache {
             this.distributedCache = distributedCache;
             this._mapper = _mapper;
         }
-        public async Task<bool> addWithKey(string key, string value, int expiry = 600, int slidingExp=600) {
+        public async Task<bool> AddWithKey(string key, string value, int expiry = 600, int slidingExp=600) {
             try {
                 int slidingExpiry = expiry;
                 var data = Encoding.UTF8.GetBytes(value);
@@ -32,7 +32,7 @@ namespace Infrastructure.Integration.Cache {
             }
         }
 
-        public async Task<bool> addWithKey<T>(string key, T value, int expiry = 600, int slidingExp=600) {
+        public async Task<bool> AddWithKey<T>(string key, T value, int expiry = 600, int slidingExp=600) {
             string valueString = null;
             try {
                 if (value is IEnumerable) {
@@ -40,13 +40,13 @@ namespace Infrastructure.Integration.Cache {
                 } else {
                     valueString = JObject.FromObject(value).ToString();
                 }
-                return await addWithKey(key, valueString, expiry, slidingExp);
+                return await AddWithKey(key, valueString, expiry, slidingExp);
             } catch {
                 return false;
             }
         }
 
-        public async Task<bool> deleteWithKey(string key) {
+        public async Task<bool> DeleteWithKey(string key) {
             try {
                 await distributedCache.RemoveAsync(key);
                 return true;
@@ -55,7 +55,7 @@ namespace Infrastructure.Integration.Cache {
             }
         }
 
-        public async Task<T?> getWithKey<T>(string key) {
+        public async Task<T?> GetWithKey<T>(string key) {
             try {
                 var data = await distributedCache.GetAsync(key);
                 if (data != null) {
@@ -72,7 +72,7 @@ namespace Infrastructure.Integration.Cache {
             }
         }
 
-        public async Task<string?> getWithKey(string key) {
+        public async Task<string?> GetWithKey(string key) {
             try {
                 var data = await distributedCache.GetAsync(key);
                 var dataAsStr = Encoding.UTF8.GetString(data);

@@ -1,4 +1,4 @@
-﻿using Core.Application.Interfaces.Email;
+﻿using Core.Application.Interfaces.Infrastructure.Email;
 using Core.Domain.DTOs.Configurations;
 using Core.Domain.DTOs.Others;
 using MailKit.Net.Smtp;
@@ -14,7 +14,7 @@ namespace Infrastructure.Integration.Email {
         public MailkitMailer(IOptionsMonitor<SystemVariables> config) {
             _param = config.CurrentValue.EmailParam;
         }
-        public async Task<bool> send(MailEnvelope envelope) {
+        public async Task<bool> Send(MailEnvelope envelope) {
             try {
                 MimeMessage message = new MimeMessage();
                 MailboxAddress from = new MailboxAddress(_param.fromName,

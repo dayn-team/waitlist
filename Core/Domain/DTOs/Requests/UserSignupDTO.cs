@@ -1,15 +1,16 @@
 using Core.Domain.Enums;
+using Core.Domain.ValueObjects;
 
 namespace Core.Domain.DTOs.Requests {
     public class UserSignupDTO {
-        public string firstName { get; set; }
-        public string lastName { get; set; }
-        public string email { get; set; }
-        public Gender gender { get; set; }
-        public string password { get; set; }
-        public string phone { get; set; }
-        public string username { get; set; }
-        public Privilege privilege { get; set; }
-        public AccountType type { get; set; }
+        public string FullName { get; set; }
+        public string Email { get; set; }
+        public Gender Gender { get; set; }
+        public string Password { get; set; }
+        public string Phone { get; set; }
+        public string Username { get; set; }
+        public Privilege Privilege { get; set; }
+        public AccountType Type { get; set; }
+        public Country Country { get; set; }
     }
 }

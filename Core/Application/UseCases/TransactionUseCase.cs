@@ -1,6 +1,6 @@
 ﻿using Core.Application.Errors;
-using Core.Application.Interfaces.Email;
 using Core.Application.Interfaces.Infrastructure.Cache;
+using Core.Application.Interfaces.Infrastructure.Email;
 using Core.Application.Interfaces.Infrastructure.Identity;
 using Core.Application.Interfaces.Infrastructure.Repository;
 using Core.Application.Interfaces.UseCases;
@@ -32,38 +32,38 @@ namespace Core.Application.UseCases {
             _repayRepo = repayRepo;
         }
 
-        public async Task<WebResponse<object>> addConsent(string transactionID) {
-            await verifySession();
+        public async Task<WebResponse<object>> AddConsent(string transactionID) {
+            await VerifySession();
             WebResponse response = new WebResponse();
-            var trx = await _trxRepo.get(transactionID);
+            var trx = await _trxRepo.Get(transactionID);
             if (trx is null)
                 throw new NotFoundError("Invalid Transaction");
-            trx.addConsent(profile.username);
-            await _trxRepo.update(trx);
+            trx.AddConsent(profile.Username);
+            await _trxRepo.Update(trx);
             return response.success();
         }
 
-        public Task<WebResponse<object>> addMessage(DisputeRequest request) {
+        public Task<WebResponse<object>> AddMessage(DisputeRequest request) {
             throw new NotImplementedException();
         }
 
-        public async Task<WebResponse<object>> createPaymentLog(RepaymentDTO repayment) {
-            await verifySession();
+        public async Task<WebResponse<object>> CreatePaymentLog(RepaymentDTO repayment) {
+            await VerifySession();
             WebResponse response = new WebResponse();
             throw new Exception();
         }
 
-        public async Task<WebResponse<object>> createTransactionEntry(TransactionDTO transaction) {
-            await verifySession();
+        public async Task<WebResponse<object>> CreateTransactionEntry(TransactionDTO transaction) {
+            await VerifySession();
             WebResponse response = new WebResponse();
             throw new Exception();
         }
 
-        public Task<WebResponse<object>> getPaymentLog(TransactionFilter filter) {
+        public Task<WebResponse<object>> GetPaymentLog(TransactionFilter filter) {
             throw new NotImplementedException();
         }
 
-        public Task<WebResponse<object>> getTransaction(TransactionFilter filter) {
+        public Task<WebResponse<object>> GetTransaction(TransactionFilter filter) {
             throw new NotImplementedException();
         }
     }

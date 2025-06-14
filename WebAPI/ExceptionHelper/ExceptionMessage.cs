@@ -49,7 +49,7 @@ namespace WebAPI.ExceptionHelper {
 
             statusCode = 500;
 
-            string deb = _identity.getHeaderValue("debug");
+            string deb = _identity.GetHeaderValue("debug");
             if (_var.debug || !string.IsNullOrEmpty(deb)) {
                 if (deb == "one") {
                     return response.fail(ResponseCodes.SYSTEM_ERROR, _exc.ToString());
@@ -58,7 +58,7 @@ namespace WebAPI.ExceptionHelper {
                 }
             }
             if (!(_logger is null)) {
-                string route = _identity.endPointAddress;
+                string route = _identity.EndPointAddress;
                 string request = _identity.IPAddress;
                 var logData = new ErrLogDTO { details = _exc.ToString(), request = request, route = route };
                 _logger.LogError("Request {route} Throws {@Position}", route, logData);

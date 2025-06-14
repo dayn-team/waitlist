@@ -1,11 +1,10 @@
-﻿using Infrastructure.DTO;
+﻿using Infrastructure.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Abstraction.Database.MySQL
-{
+namespace Infrastructure.Abstraction.Database.MySQL {
     public interface IRepository
     {
         Task beginTransacion();

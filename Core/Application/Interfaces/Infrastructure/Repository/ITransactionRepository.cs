@@ -3,7 +3,7 @@ using Core.Domain.Entities;
 
 namespace Core.Application.Interfaces.Infrastructure.Repository {
     public interface ITransactionRepository : IBaseRepository<Transaction> {
-        Task<Transaction?> get(string id);
-        Task<List<Transaction>> get(TransactionFilter filter);
+        Task<Transaction?> Get(string id);
+        Task<List<Transaction>> Get(TransactionFilter filter);
     }
 }

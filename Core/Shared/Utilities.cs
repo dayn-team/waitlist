@@ -94,7 +94,7 @@ namespace Core.Shared
             var unixTimestamp = System.Convert.ToInt64((value - date).TotalSeconds);
             return unixTimestamp;
         }
-        public static (DateTime modernDate, long unixTimestamp, long unixTimestampMS) getTodayDate()
+        public static (DateTime modernDate, long unixTimestamp, long unixTimestampMS) GetTodayDate()
         {
             long totalSeconds = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
             long totalmSecs = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;

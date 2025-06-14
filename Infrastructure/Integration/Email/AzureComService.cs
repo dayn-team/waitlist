@@ -1,6 +1,6 @@
 ﻿using Azure;
 using Azure.Communication.Email;
-using Core.Application.Interfaces.Email;
+using Core.Application.Interfaces.Infrastructure.Email;
 using Core.Domain.DTOs.Configurations;
 using Core.Domain.DTOs.Others;
 using Core.Shared;
@@ -17,7 +17,7 @@ namespace Infrastructure.Integration.Email {
             string connectionString = string.Concat("endpoint=", _emailconfig.smtpServer, ";accesskey=", _emailconfig.password);
             _client = new EmailClient(connectionString);
         }
-        public async Task<bool> send(MailEnvelope envelope) {
+        public async Task<bool> Send(MailEnvelope envelope) {
             EmailContent emailContent = new EmailContent(envelope.subject);
             if (envelope.bodyIsPlainText) {
                 emailContent.PlainText = envelope.body;

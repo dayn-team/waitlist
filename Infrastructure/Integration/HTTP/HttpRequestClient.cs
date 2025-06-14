@@ -1,5 +1,5 @@
 ﻿using Infrastructure.Abstraction.HTTP;
-using Infrastructure.DTO;
+using Infrastructure.Model;
 using NetCore.AutoRegisterDi;
 
 namespace Infrastructure.Integration.HTTP {

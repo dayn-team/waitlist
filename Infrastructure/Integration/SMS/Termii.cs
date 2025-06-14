@@ -23,7 +23,7 @@ namespace Infrastructure.Integration.SMS {
             this.requestor = requestor;
         }
 
-        public async Task<bool> sendSMS(string message, string phone) {
+        public async Task<bool> SendSMS(string message, string phone) {
             JObject requestBody = new JObject();
             requestBody.Add("api_key", config.api_key);
             requestBody.Add("sms", message);
@@ -40,7 +40,7 @@ namespace Infrastructure.Integration.SMS {
             return false;
         }
 
-        public async Task<string> sendOTP(string phone) {
+        public async Task<string> SendOTP(string phone) {
             if (_sysVar.debug) {
                 return $"stgk_{Cryptography.CharGenerator.genID()}";
             }
@@ -67,7 +67,7 @@ namespace Infrastructure.Integration.SMS {
             return null;
         }
 
-        public async Task<bool> verifyOTP(string phone, string otp, string token) {
+        public async Task<bool> VerifyOTP(string phone, string otp, string token) {
             if (_sysVar.debug) {
                 if (token.StartsWith("stgk_")) {
                     if (otp != "0176")

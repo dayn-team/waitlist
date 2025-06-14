@@ -23,8 +23,8 @@ namespace Infrastructure.Integration.Socket {
             Encoding = encoding ?? Encoding.UTF8;
             timer.Interval = 5000;
             timer.Elapsed += new ElapsedEventHandler(liveNessCheck);
-            lastActivity = Utilities.getTodayDate().unixTimestamp;
-            connectionTime = Utilities.getTodayDate().unixTimestamp;
+            lastActivity = Utilities.GetTodayDate().unixTimestamp;
+            connectionTime = Utilities.GetTodayDate().unixTimestamp;
             connectionID = Cryptography.CharGenerator.genID();
             _socketManager = socketManager;
             timer.Start();
@@ -32,7 +32,7 @@ namespace Infrastructure.Integration.Socket {
 
         protected virtual async void liveNessCheck(object? sender, ElapsedEventArgs e) {
             //checks every 3 secs for liveness
-            long dormantTime = Utilities.getTodayDate().unixTimestamp - lastActivity;
+            long dormantTime = Utilities.GetTodayDate().unixTimestamp - lastActivity;
             if (dormantTime >= 3000) {
                 if (_webSocket.State != WebSocketState.Open) {
                     await closeSocketAsync();

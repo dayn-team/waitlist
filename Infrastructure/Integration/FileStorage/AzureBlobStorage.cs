@@ -23,7 +23,7 @@ namespace Infrastructure.Integration.FileStorage {
             _azureStore = _sysVar.AzureStorage;
             _blobServiceClient = new BlobServiceClient(_azureStore.connectionString);
         }
-        public async Task<bool> deleteFile(string fileName) {
+        public async Task<bool> DeleteFile(string fileName) {
             try {
                 var container = await createContainerAsync(_azureStore.containerName);
                 BlobClient blobClient = container.GetBlobClient(fileName);
@@ -36,7 +36,7 @@ namespace Infrastructure.Integration.FileStorage {
             return false;
         }
 
-        public async Task<bool> getFileInto(string fileName, string nFile) {
+        public async Task<bool> GetFileInto(string fileName, string nFile) {
             try {
                 var container = await createContainerAsync(_azureStore.containerName);
                 BlobClient blobClient = container.GetBlobClient(fileName);
@@ -66,7 +66,7 @@ namespace Infrastructure.Integration.FileStorage {
             return null;
         }
 
-        public async Task<string> uploadFileAsync(IFormFile file, string fileName) {
+        public async Task<string> UploadFileAsync(IFormFile file, string fileName) {
             var container = await createContainerAsync(_azureStore.containerName);
             BlobClient blobClient = container.GetBlobClient(fileName);
             using (var memoryStream = new MemoryStream()) {
@@ -88,7 +88,7 @@ namespace Infrastructure.Integration.FileStorage {
             return container;
         }
 
-        public string getSASToken(string filename, string fullFile, string contentType, long SASExpiryMins = -1) {
+        public string GetSASToken(string filename, string fullFile, string contentType, long SASExpiryMins = -1) {
             SASExpiryMins = SASExpiryMins > 0 ? SASExpiryMins : _azureStore.SASExpiryMins;
             Azure.Storage.Sas.BlobSasBuilder blobSasBuilder = new Azure.Storage.Sas.BlobSasBuilder() {
                 BlobContainerName = _azureStore.containerName,
